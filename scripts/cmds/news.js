@@ -1,45 +1,47 @@
-const axios = require("axios");
+const axios = require('axios');
 
 module.exports = {
   config: {
     name: "news",
-    version: "1.0.0",
-    author: "XyryllPanget",
-    countDown: 5,
+    aliases: [],
+    author: "kshitiz",
+    version: "2.0",
+    cooldown: 5,
     role: 0,
     shortDescription: {
-      vi: "Lấy tin tức mới nhất.",
-      en: "Get the latest news.",
+      en: "search and get news"
     },
     longDescription: {
-      vi: "Lệnh này lấy các tin tức mới nhất từ API và trả về.",
-      en: "This command fetches the latest news from an API and returns them.",
+      en: "search and get news"
     },
-    category: "Utility",
+    category: "????",
     guide: {
-      vi: "Để sử dụng lệnh này, hãy gõ !news.",
-      en: "To use this command, type !news.",
-    },
+      en: "{p}{n} [search]"
+    }
   },
-
-  langs: {
-    vi: {},
-    en: {},
-  },
-
-  onStart: async function ({ api, event }) {
+  onStart: async function ({ api, event, args }) { 
     try {
-      const response = await axios.get('https://sensui-useless-apis.codersensui.repl.co/api/tools/news');
-      const newsdata = response.data;
+      const apiKey = 'pub_3120796ef3315b3c51e7930d31ee6322ae911'; 
+      const country = 'np'; 
+      const response = await axios.get(`https://newsdata.io/api/1/news?country=${country}&apikey;=${apiKey}`);
+      const newsdata = response.data.results;
 
-      let message = '';
-      for (const { title, source } of newsdata) {
-        message += `Title: ${title}\nSource: ${source}\n\n`;
+      const articlesPerPage = 5; 
+      let message = 'Latest news:\\';
+      let page = 1;
+
+      for (const article of newsdata) {
+        message += `Title: ${article.title}\Source: ${article.source}\Description: ${article.description}\Link: ${article.link}\\`;
+
+        if (message.length > 4000) {
+          break; 
+        }
       }
 
-      if (message === '') {
+      if (message === 'Latest news:\\') {
         message = 'No news articles found.';
       }
+
       api.sendMessage(message, event.threadID, event.messageID);
     } catch (error) {
       console.error('Something went wrong:', error);

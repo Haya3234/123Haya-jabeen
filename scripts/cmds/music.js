@@ -2,60 +2,106 @@ const axios = require("axios");
 const fs = require("fs-extra");
 const os = require("os");
 const yts = require("yt-search");
-const ytdl = require("@distube/ytdl-core");
+const ytdl = require("ytdl-core");
 
 module.exports = {
-  sentMusic: { english: [], nepali: [], hindi: [], batman:[], legend: [], lovely:[], norzum:[] },
+  sentMusic: {},
 
-  music: {
-    english: ["PLMC9KNkIncKseYxDN2niH6glGRWKsLtde"],//yeutai song maa aru playlist id halna ["", "", ""],
-    nepali: ["PLqT4Y_q-m4nCujUP2qDnGMQm5KNicw1GQ"],
-    hindi: ["PLaPLzpOlr3JRAr7L8NIRJsNhsNtLhM5Ln"],
-    batman:
-["PLqT4Y_q-m4nDNBUXrTxVscTLb7DBcbr6Y"],
-    legend: ["PL78ppHMLFyhSIfD8KvMRJdKDruU2h3UIa"],
-    lovely: ["PLI_l1q-WZI9nIsMDTy3i1SEc-1JDywQY-"],
-    norzum: ["PL1TrQgiilM_Y1oGwdcGdpnu_XIig_lURL"],
-  },
+  playlistFile: "./playlist.json",
 
+  isPlaying: false,
   config: {
-    name: "music",
-    version: "2.0",
+    name: 'music',
+    version: '3.0',
+    author: 'Vex_Kshitiz | Sky',
+    countDown: 5,
     role: 0,
-    author: "𝗞𝘀𝗵𝗶𝘁𝗶𝘇 & 𝗦𝗞𝗬",
-    cooldowns: 40,
-    shortDescription: "Fetch a random music track from a YouTube playlist and send it",
-    longDescription: "Fetch a random music track from a YouTube playlist and send it",
-    category: "music",
-    dependencies: {
-      "fs-extra": "",
-      "axios": "",
-      "ytdl-core": "",
-      "yt-search": ""
+    shortDescription: ' ',
+    longDescription: 'ultimate music cmd with many features',
+    category: 'media',
+    guide: {
+      en: '{p}{n}',
     }
   },
+
+  loadPlaylist: async function () {
+    try {
+      const data = await fs.readFile(this.playlistFile, "utf-8");
+      this.sentMusic = JSON.parse(data);
+    } catch (error) {
+      console.error("Error loading playlist:", error);
+      this.sentMusic = {};
+    }
+  },
+
+  savePlaylist: async function () {
+    try {
+      await fs.writeFile(this.playlistFile, JSON.stringify(this.sentMusic, null, 2));
+      console.log("Playlist saved successfully.");
+    } catch (error) {
+      console.error("Error saving playlist:", error);
+    }
+  },
+
   onStart: async function ({ api, event, message, args }) {
+    api.setMessageReaction("✅", event.messageID, (err) => {}, true);
     try {
       const senderID = event.senderID;
-
-      const loadingMessage = await api.sendMessage("𝗹𝗼𝗮𝗱𝗶𝗻𝗴 𝗮 𝗿𝗮𝗻𝗱𝗼𝗺 𝗺𝘂𝘀𝗶𝗰 𝗽𝗹𝗲𝗮𝘀𝗲 𝘄𝗮𝗶𝘁... 🎵", event.threadID, null, event.messageID);
+      await this.loadPlaylist();
 
       if (args.length === 0) {
-        const categoryList = Object.keys(this.music).join(', ');
-        api.unsendMessage(loadingMessage.messageID);
-        return api.sendMessage(`Please type {prefix} music <category>\nAvailable categories: ${categoryList}`, event.threadID, null, event.messageID);
+        const categoryList = Object.keys(this.sentMusic).join(", ");
+        return api.sendMessage(`{P} music <category>\nAvailable categories: ${categoryList}`, event.threadID, null, event.messageID);
       }
 
-      const category = args[0].toLowerCase();
+      const action = args[0].toLowerCase();
 
-      if (!this.music.hasOwnProperty(category)) {
-        api.unsendMessage(loadingMessage.messageID);
-        return api.sendMessage(`Invalid category. Available categories: ${Object.keys(this.music).join(', ')}`, event.threadID, null, event.messageID);
+      if (action === "list") {
+        const categoryList = Object.keys(this.sentMusic).join(", ");
+        return api.sendMessage(`Available categories: ${categoryList}`, event.threadID, null, event.messageID);
+      } else if (action === "del") {
+        const categoryToDelete = args[1];
+        if (!categoryToDelete) {
+          return api.sendMessage("Please specify a category to delete.", event.threadID, null, event.messageID);
+        }
+        if (!this.sentMusic.hasOwnProperty(categoryToDelete)) {
+          return api.sendMessage(`${categoryToDelete} not found.`, event.threadID, null, event.messageID);
+        }
+        delete this.sentMusic[categoryToDelete];
+        await this.savePlaylist();
+        return api.sendMessage(`${categoryToDelete} deleted successfully.`, event.threadID, null, event.messageID);
+      } else if (action === "play") {
+        const songName = args.slice(1).join(" ");
+        this.playSong(api, event, songName);
+        return;
+      } else if (action === "on") {
+        const category = args[1];
+        if (!category || !this.sentMusic.hasOwnProperty(category)) {
+          return api.sendMessage("Invalid category.", event.threadID, null, event.messageID);
+        }
+        this.isPlaying = true;
+        this.playMusicFromCategory(api, event, category);
+        return;
+      } else if (action === "off") {
+        this.isPlaying = false;
+        return api.sendMessage("Stopped playing music.", event.threadID, null, event.messageID);
       }
 
-      const playlistId = this.music[category][Math.floor(Math.random() * this.music[category].length)];
+      const category = action;
 
-      const apiKey = "AIzaSyAO1tuGus4-S8RJID51f8WJAM7LXz1tVNc";
+      if (!this.sentMusic.hasOwnProperty(category)) {
+        const playlistID = args[2];
+        if (!playlistID || !playlistID.startsWith("PL")) {
+          return api.sendMessage("Invalid playlistID.", event.threadID, null, event.messageID);
+        }
+        this.sentMusic[category] = [playlistID];
+        await this.savePlaylist();
+        return api.sendMessage(`${category} added successfully.`, event.threadID, null, event.messageID);
+      }
+
+      const playlistId = this.sentMusic[category][Math.floor(Math.random() * this.sentMusic[category].length)];
+
+      const apiKey = "AIzaSyAO1tuGus4-S8RJID51f8WJAM7LXz1tVNc"; 
 
       const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?key=${apiKey}&playlistId=${playlistId}&part=contentDetails&maxResults=50`;
       const response = await axios.get(playlistUrl);
@@ -70,8 +116,7 @@ module.exports = {
       const unwatchedVideoIds = videoIds.filter((videoId) => !this.sentMusic[category].includes(videoId));
 
       if (unwatchedVideoIds.length === 0) {
-        api.unsendMessage(loadingMessage.messageID);
-        return api.sendMessage("No unwatched music tracks left.", event.threadID, null, event.messageID);
+        return api.sendMessage("error", event.threadID, null, event.messageID);
       }
 
       const randomVideoId = unwatchedVideoIds[Math.floor(Math.random() * unwatchedVideoIds.length)];
@@ -83,60 +128,188 @@ module.exports = {
 
       const videoInfo = videoResponse.data.items[0].snippet;
 
-      const randomMusicTitle = videoInfo.title;
+      const randomVideoTitle = videoInfo.title;
 
-      const cacheFilePath = os.tmpdir() + "/randomMusicTitle.txt";
-      fs.writeFileSync(cacheFilePath, randomMusicTitle);
+      const cacheFilePath = os.tmpdir() + "/randomVideoTitle.txt";
+      fs.writeFileSync(cacheFilePath, randomVideoTitle);
 
-      const searchResults = await yts(randomMusicTitle);
+      const searchResults = await yts(randomVideoTitle);
 
       if (!searchResults.videos.length) {
-        api.unsendMessage(loadingMessage.messageID);
-        return api.sendMessage("No music track found based on the title.", event.threadID, null, event.messageID);
+        return api.sendMessage("No music found.", event.threadID, null, event.messageID);
       }
 
       const foundVideo = searchResults.videos[0];
       const videoUrl = foundVideo.url;
 
-      const stream = ytdl(videoUrl, { filter: "audioonly" });
-      const fileName = `${senderID}.mp3`;
+      const fileName = `rendi.mp3`;
       const filePath = __dirname + `/cache/${fileName}`;
+
+      const stream = ytdl(videoUrl, { filter: "audioonly" });
 
       stream.pipe(fs.createWriteStream(filePath));
 
       stream.on('response', () => {
-        console.info('[DOWNLOADER]', 'Starting download now!');
+        console.info('Download started');
       });
 
       stream.on('info', (info) => {
-        console.info('[DOWNLOADER]', `Downloading music: ${info.videoDetails.title}`);
+        console.info(`Downloading ${info.videoDetails.title}`);
       });
 
       stream.on('end', () => {
-        console.info('[DOWNLOADER] Downloaded');
+        console.info('Downloaded');
 
         if (fs.statSync(filePath).size > 26214400) {
           fs.unlinkSync(filePath);
-          api.unsendMessage(loadingMessage.messageID);
           return api.sendMessage('❌ | The file could not be sent because it is larger than 25MB.', event.threadID, null, event.messageID);
         }
 
         const message = {
-          body: `🎵 | 𝗛𝗲𝗿𝗲'𝘀 𝘁𝗵𝗲 𝗿𝗮𝗻𝗱𝗼𝗺 𝗺𝘂𝘀𝗶𝗰:\n\n🔮 | 𝗧𝗶𝘁𝗹𝗲: ${randomMusicTitle}\n⏰ Duration: ${foundVideo.duration.timestamp}`,
+          body: ``,
           attachment: fs.createReadStream(filePath)
         };
 
         api.sendMessage(message, event.threadID, null, event.messageID, () => {
           fs.unlinkSync(filePath);
         });
-
-        setTimeout(() => {
-          api.unsendMessage(loadingMessage.messageID);
-        }, 10000);
       });
     } catch (error) {
-      console.error('[ERROR]', error);
-      api.sendMessage('An error occurred while processing the command.', event.threadID, null, event.messageID);
+      console.error('error', error);
+      api.sendMessage('To play music, type {p} music {category}\nTo add a playlist, type {p} music {category} | {playlistID}\nFor example: !music nepsong | PLm_3vnTS-pvnc4wnMI7UYko1uiSX73ahd', event.threadID, null, event.messageID);
     }
   },
+
+  playSong: async function (api, event, songName) {
+    try {
+      const searchResults = await yts(songName);
+      if (!searchResults.videos.length) {
+        return api.sendMessage("No music found for the given song name.", event.threadID, null, event.messageID);
+      }
+      const foundVideo = searchResults.videos[0];
+      const videoUrl = foundVideo.url;
+      const fileName = `${foundVideo.videoId}.mp3`;
+      const filePath = __dirname + `/cache/${fileName}`;
+      const stream = ytdl(videoUrl, { filter: "audioonly" });
+      stream.pipe(fs.createWriteStream(filePath));
+      stream.on('response', () => {
+        console.info('Download started');
+      });
+      stream.on('info', (info) => {
+        console.info(`Downloading ${info.videoDetails.title}`);
+      });
+      stream.on('end', () => {
+        console.info('Downloaded');
+        if (fs.statSync(filePath).size > 26214400) {
+          fs.unlinkSync(filePath);
+          return api.sendMessage('❌ | The file could not be sent because it is larger than 25MB.', event.threadID, null, event.messageID);
+        }
+        const message = {
+          body: ``,
+          attachment: fs.createReadStream(filePath)
+        };
+        api.sendMessage(message, event.threadID, null, event.messageID, () => {
+          fs.unlinkSync(filePath);
+        });
+      });
+    } catch (error) {
+      console.error('Error playing song:', error);
+      api.sendMessage('An error occurred while playing the song.', event.threadID, null, event.messageID);
+    }
+  },
+
+  playMusicFromCategory: async function (api, event, category) {
+    try {
+      while (this.isPlaying) {
+        const playlistIds = this.sentMusic[category];
+        if (!playlistIds || playlistIds.length === 0) {
+          return api.sendMessage("No playlist found for the given category.", event.threadID, null, event.messageID);
+        }
+        const playlistId = playlistIds[Math.floor(Math.random() * playlistIds.length)];
+        const apiKey = "AIzaSyAO1tuGus4-S8RJID51f8WJAM7LXz1tVNc"; 
+
+        const playlistUrl = `https://www.googleapis.com/youtube/v3/playlistItems?key=${apiKey}&playlistId=${playlistId}&part=contentDetails&maxResults=50`;
+        const response = await axios.get(playlistUrl);
+
+        if (response.status === 404) {
+          console.error('Playlist items not found.');
+          return;
+        }
+
+        const items = response.data.items;
+        const videoIds = items.map((item) => item.contentDetails.videoId);
+
+        if (this.sentMusic[category].length === videoIds.length) {
+          this.sentMusic[category] = [];
+        }
+
+        const unwatchedVideoIds = videoIds.filter((videoId) => !this.sentMusic[category].includes(videoId));
+
+        if (unwatchedVideoIds.length === 0) {
+          console.error('No unwatched videos found.');
+          return;
+        }
+
+        const randomVideoId = unwatchedVideoIds[Math.floor(Math.random() * unwatchedVideoIds.length)];
+        this.sentMusic[category].push(randomVideoId);
+
+        const videoDetailsUrl = `https://www.googleapis.com/youtube/v3/videos?key=${apiKey}&id=${randomVideoId}&part=snippet`;
+        const videoResponse = await axios.get(videoDetailsUrl);
+
+        const videoInfo = videoResponse.data.items[0].snippet;
+        const randomMusicTitle = videoInfo.title;
+
+        const cacheFilePath = os.tmpdir() + "/randomMusicTitle.txt";
+        fs.writeFileSync(cacheFilePath, randomMusicTitle);
+
+        const searchResults = await yts(randomMusicTitle);
+
+        if (!searchResults.videos.length) {
+          console.error('No music found.');
+          return;
+        }
+
+        const foundVideo = searchResults.videos[0];
+        const videoUrl = foundVideo.url;
+
+        const fileName = `${foundVideo.videoId}.mp3`;
+        const filePath = __dirname + `/cache/${fileName}`;
+
+        const stream = ytdl(videoUrl, { filter: "audioonly" });
+        stream.pipe(fs.createWriteStream(filePath));
+
+        stream.on('response', () => {
+          console.info('Download started');
+        });
+
+        stream.on('info', (info) => {
+          console.info(`Downloading ${info.videoDetails.title}`);
+        });
+
+        stream.on('end', () => {
+          console.info('Downloaded');
+
+          if (fs.statSync(filePath).size > 26214400) {
+            fs.unlinkSync(filePath);
+            return api.sendMessage('❌ | The file could not be sent because it is larger than 25MB.', event.threadID, null, event.messageID);
+          }
+
+          const message = {
+            body: ``,
+            attachment: fs.createReadStream(filePath)
+          };
+
+          api.sendMessage(message, event.threadID, null, event.messageID, () => {
+            fs.unlinkSync(filePath);
+          });
+        });
+
+        await new Promise(resolve => setTimeout(resolve, 3 * 60 * 1000)); 
+      }
+    } catch (error) {
+      console.error('Error playing music from category:', error);
+      api.sendMessage('An error occurred while playing music from the category.', event.threadID, null, event.messageID);
+    }
+  }
+    
 };

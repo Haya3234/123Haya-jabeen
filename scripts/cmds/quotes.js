@@ -5,7 +5,7 @@ const path = require("path");
 module.exports = {
   config: {
     name: "quotes",
-    aliases: ["quote"],
+    aliases: ["quote1"],
     author: "Kshitiz",
     version: "1.0",
     cooldowns: 5,
@@ -20,7 +20,7 @@ module.exports = {
     api.setMessageReaction("🕐", event.messageID, (err) => {}, true);
 
     try {
-      const response = await axios.get(`https://sigmas-quote.onrender.com/kshitiz`, { responseType: "stream" });
+      const response = await axios.get(`https://quotes-l84n.onrender.com/kshitiz`, { responseType: "stream" });
 
       const tempVideoPath = path.join(__dirname, "cache", `${Date.now()}.mp4`);
 

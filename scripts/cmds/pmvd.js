@@ -4,23 +4,23 @@ const path = require("path");
 
 module.exports = {
   config: {
-    name: "quotes",
-    aliases: ["quote"],
+    name: "pmvd",
+    aliases: [],
     author: "Kshitiz",
     version: "1.0",
     cooldowns: 5,
     role: 0,
-    shortDescription: "Get random quotes",
-    longDescription: "Get random quotes videos",
+    shortDescription: "Get random programming meme",
+    longDescription: "Get random programming meme",
     category: "fun",
-    guide: "{p}quotes",
+    guide: "{p}pmvd",
   },
 
   onStart: async function ({ api, event, args, message }) {
     api.setMessageReaction("🕐", event.messageID, (err) => {}, true);
 
     try {
-      const response = await axios.get(`https://sigmas-quote.onrender.com/kshitiz`, { responseType: "stream" });
+      const response = await axios.get(`https://pmvd-szsw.onrender.com/kshitiz`, { responseType: "stream" });
 
       const tempVideoPath = path.join(__dirname, "cache", `${Date.now()}.mp4`);
 
@@ -31,7 +31,7 @@ module.exports = {
         const stream = fs.createReadStream(tempVideoPath);
 
         message.reply({
-          body: `Random Quote Video`,
+          body: `Random Programming Meme`,
           attachment: stream,
         });
 

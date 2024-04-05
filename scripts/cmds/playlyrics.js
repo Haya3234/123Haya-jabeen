@@ -1,6 +1,6 @@
 module.exports = {
   config: {
-    name: "play",
+    name: "playlyrics",
     version: "1.0",
     role: 0,
     author: "KSHITIZ",
