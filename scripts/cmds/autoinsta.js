@@ -9,7 +9,7 @@ module.exports = {
     name: 'autoinsta',
     version: '1.0',
     author: 'Kshitiz',
-    countDown: 5,
+    countDown: 0,
     role: 0,
     shortDescription: 'auto video downloader',
     longDescription: '',

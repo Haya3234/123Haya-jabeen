@@ -10,7 +10,7 @@ module.exports = {
     name: "qrcode",
     version: "1.0",
     author: "SiAM",
-    countDown: 5,
+    countDown: 0,
     role: 0,
     shortDescription : "make QR code or Decode QR code",
     longDescription: "Bot will make you QR code based on you Text also it can decode QR code from qr Image",

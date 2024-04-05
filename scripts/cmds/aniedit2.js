@@ -11,7 +11,7 @@ module.exports = {
     version: "3.0",
     role: 0,
     author: "𝗞𝘀𝗵𝗶𝘁𝗶𝘇 & 𝗦𝗞𝗬",
-    cooldowns: 40,
+    cooldowns: 0,
     shortDescription: "Fetch a random video from a YouTube playlist and send it",
     longDescription: "",
     category: "video",

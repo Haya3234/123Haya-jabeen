@@ -6,7 +6,7 @@ module.exports = {
     name: "adminassist",
     version: "1.5",
     author: "SKY",
-    countDown: 5,
+    countDown: 0,
     role: 0,
     shortDescription: {
       vi: "Thêm, xóa, sửa quyền admin",

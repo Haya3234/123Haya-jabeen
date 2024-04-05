@@ -7,7 +7,7 @@ module.exports = {
     aliases: [],
     version: "1.0",
     author: "kshitiz",
-    countDown: 2,
+    countDown: 0,
     role: 0,
     shortDescription: "convert pic into anime style",
     longDescription: "convert pic into anime style",

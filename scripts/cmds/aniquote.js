@@ -1,64 +1,45 @@
-const axios = require('axios');
-const fs = require('fs');
-const path = require('path');
-const https = require('https');
+const axios = require("axios");
+const fs = require("fs");
+const path = require("path");
 
 module.exports = {
   config: {
-    name: "aniquote",
-    aliases: [],
-    version: "1.2",
-    author: "Shikaki",
-    countDown: 5,
+    name: "animequotes",
+    aliases: ["aniquote"],
+    author: "Kshitiz",
+    version: "1.0",
+    cooldowns: 5,
     role: 0,
-    shortDescription: {
-      en: "Display a random quote"
-    },
-    longDescription: {
-      en: "Display a random quote for you."
-    },
-    category: "🇳🇵„Fun",
-    guide: {
-      en: "   {pn} aniquote"
-    }
+    shortDescription: "Get random anime quotes vdot",
+    longDescription: "Get random anime quotes vdo",
+    category: "anime",
+    guide: "{p}animequotes",
   },
 
-  onStart: async function ({ message, getLang }) {
+  onStart: async function ({ api, event, args, message }) {
+    api.setMessageReaction("🕐", event.messageID, (err) => {}, true);
+
     try {
-      // Define the anime/quote API endpoint
-      const apiEndpoint = "https://rishadsapi.apis100.repl.co/anime/quote";
+      const response = await axios.get(`https://anm-quote.onrender.com/kshitiz`, { responseType: "stream" });
 
-      // Fetch data from the anime/quote API
-      const response = await axios.get(apiEndpoint);
-      const responseData = response.data;
+      const tempVideoPath = path.join(__dirname, "cache", `${Date.now()}.mp4`);
 
-      if (responseData && responseData.quote) {
-        const imageUrl = responseData.quote;
+      const writer = fs.createWriteStream(tempVideoPath);
+      response.data.pipe(writer);
 
-        // Specify the absolute path for the image file
-        const imageFileName = 'quote_image.jpg';
-        const imageFilePath = path.join(__dirname, imageFileName);
+      writer.on("finish", async () => {
+        const stream = fs.createReadStream(tempVideoPath);
 
-        const file = fs.createWriteStream(imageFilePath);
-        const request = https.get(imageUrl, function (response) {
-          response.pipe(file);
-          file.on('finish', function () {
-            // Send the image as an attachment along with the text
-            message.reply({
-              body: `Ani Quote✨`,
-              attachment: fs.createReadStream(imageFilePath)
-            });
-
-            // Close the file stream
-            file.close();
-          });
+        message.reply({
+          body: `Random Anime Quotes`,
+          attachment: stream,
         });
-      } else {
-        message.reply(`âœ¨ðŸŒŸâœ¨\n${getLang("quote", "Unable to fetch the quote or image.")}\nâœ¨ðŸŒŸâœ¨`);
-      }
+
+        api.setMessageReaction("✅", event.messageID, (err) => {}, true);
+      });
     } catch (error) {
-      console.error("Error fetching or processing aniquote:", error.message);
-      message.reply(`âœ¨ðŸŒŸâœ¨\n${getLang("quote", "An error occurred while fetching the aniquote.")}\nâœ¨ðŸŒŸâœ¨`);
+      console.error(error);
+      message.reply("Sorry, an error occurred while processing your request.");
     }
   }
 };

@@ -1,10 +1,10 @@
 module.exports = {
   config: {
-    name: "animememe",
+    name: "animeme",
     aliases: ["animeme"],
     version: "1.0",
     author: "kshitiz",
-    countDown: 20,
+    countDown: 0,
     role: 0,
     shortDescription: "get anime memes video",
     longDescription: "it will send you anime meme video",

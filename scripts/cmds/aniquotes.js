@@ -1,40 +1,45 @@
-const axios = require('axios');
+const axios = require("axios");
+const fs = require("fs");
+const path = require("path");
 
 module.exports = {
   config: {
-    name: "aniquotes",
-    aliases: ["aniquote"],
-    author: "kshitiz",  
-    version: "2.0",
+    name: "animequotes",
+    aliases: ["aniquotes"],
+    author: "Kshitiz",
+    version: "1.0",
     cooldowns: 5,
     role: 0,
-    shortDescription: {
-      en: ""
-    },
-    longDescription: {
-      en: "Get anime quotes along with anime name and character."
-    },
+    shortDescription: "Get random anime quotes vdot",
+    longDescription: "Get random anime quotes vdo",
     category: "anime",
-    guide: {
-      en: "{p}{n} aniquotes"
-    }
+    guide: "{p}animequotes",
   },
-  onStart: async function ({ api, event }) {
+
+  onStart: async function ({ api, event, args, message }) {
+    api.setMessageReaction("🕐", event.messageID, (err) => {}, true);
+
     try {
-      
-      const response = await axios.get('https://animechan.xyz/api/random');
+      const response = await axios.get(`https://anm-quote.onrender.com/kshitiz`, { responseType: "stream" });
 
-      
-      const { anime, character, quote } = response.data;
+      const tempVideoPath = path.join(__dirname, "cache", `${Date.now()}.mp4`);
 
-      
-      const message = `𝗔𝗻𝗶𝗺𝗲 ⛩️: ${anime}\n𝗖𝗵𝗮𝗿𝗮𝗰𝘁𝗲𝗿 😎: ${character}\n𝗤𝘂𝗼𝘁𝗲 ✨: ${quote}`;
+      const writer = fs.createWriteStream(tempVideoPath);
+      response.data.pipe(writer);
 
-      
-      api.sendMessage({ body: message }, event.threadID, event.messageID);
+      writer.on("finish", async () => {
+        const stream = fs.createReadStream(tempVideoPath);
+
+        message.reply({
+          body: `Random Anime Quotes`,
+          attachment: stream,
+        });
+
+        api.setMessageReaction("✅", event.messageID, (err) => {}, true);
+      });
     } catch (error) {
       console.error(error);
-      api.sendMessage("An error occurred while fetching the anime quote.", event.threadID);
+      message.reply("Sorry, an error occurred while processing your request.");
     }
   }
 };
