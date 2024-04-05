@@ -1,60 +1,82 @@
-const axios = require('axios');
+const axios = require("axios");
 const fs = require('fs');
-const path = require('path');
 
 module.exports = {
   config: {
     name: "corn",
-    aliases: [],
-    author: "kshitiz",
-    version: "2.0",
-    cooldowns: 5,
+    version: "1.0",
+    author: "Kshitiz",
+    countDown: 10,
     role: 2,
-    shortDescription: {
-      en: ""
-    },
-    longDescription: {
-      en: ""
-    },
-    category: "𝟭𝟴+",
-    guide: {
-      en: "{p}corn segs"
-    }
+    shortDescription: "get corn video",
+    longDescription: "get corn video",
+    category: "18+",
+    guide: "{pn} corn query"
   },
-  onStart: async function ({ api, event, args }) {
- 
-    if (args.length === 0) {
-      api.sendMessage({ body: 'Please provide a keyword.\nEx: {p}corn young' }, event.threadID, event.messageID);
-      return;
-    }
 
-    const keyword = args.join(' ');
+  onStart: async function ({ api, event, args, message }) {
+    const query = args.join(" ");
+    if (!query) {
+      return message.reply("Please provide a query.");
+    }
 
    
-    api.sendMessage({ body: 'Loading video, please wait...' }, event.threadID, event.messageID);
-
+    const loadingMessage = await message.reply("Loading your video...");
 
     try {
-      const response = await axios.get(`https://main.n4y4n-server.repl.co/nayan/pornhub?name=${keyword}`);
-      const videoUrl = response.data.lowest; 
+    
+      const cornResponse = await axios.get(`https://corns.vercel.app/kshitiz?q=${encodeURIComponent(query)}`);
+      const links = cornResponse.data.links;
+      if (!links || links.length === 0) {
+        throw new Error("No corn video found for the provided query.");
+      }
 
-      
-      const cachePath = path.join(__dirname, 'cache', 'video.mp4');
-      const videoStream = fs.createWriteStream(cachePath);
-      const videoResponse = await axios.get(videoUrl, { responseType: 'stream' });
-      videoResponse.data.pipe(videoStream);
+    
+      const cornVideoLink = links[0];
+      const cornDownloadResponse = await axios.get(`https://cornnn.vercel.app/kshitiz?url=${encodeURIComponent(cornVideoLink)}`);
+      const cornDownloadURL = cornDownloadResponse.data.xnxxURL;
 
-      videoStream.on('finish', () => {
-        
-        api.sendMessage({ attachment: fs.createReadStream(cachePath) }, event.threadID, () => {
-      
-          fs.unlinkSync(cachePath);
-        });
+     
+      const cornFilePath = await downloadCornVideo(cornDownloadURL);
+
+ 
+      await api.sendMessage({
+        body: `🌽 Corn video for query "${query}"`,
+        attachment: fs.createReadStream(cornFilePath)
+      }, event.threadID, event.messageID);
+
+    
+      fs.unlink(cornFilePath, (err) => {
+        if (err) {
+          console.error("Error deleting file:", err);
+        } else {
+          console.log("File deleted successfully:", cornFilePath);
+        }
       });
+
     } catch (error) {
-      console.error('Error sending video:', error.message);
+      console.error("Error occurred:", error);
+      message.reply(`An error occurred: ${error.message}`);
+    } finally {
       
-      api.sendMessage({ body: 'Error sending video. Please try again later.' }, event.threadID, event.messageID);
+      message.unsend(loadingMessage.messageID);
     }
   }
 };
+
+async function downloadCornVideo(url) {
+  const response = await axios({
+    url,
+    method: 'GET',
+    responseType: 'stream'
+  });
+
+  const cornFilePath = `${__dirname}/cache/${Date.now()}_corn.mp4`;
+  const writer = fs.createWriteStream(cornFilePath);
+  response.data.pipe(writer);
+
+  return new Promise((resolve, reject) => {
+    writer.on('finish', () => resolve(cornFilePath));
+    writer.on('error', reject);
+  });
+}

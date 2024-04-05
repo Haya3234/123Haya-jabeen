@@ -3,7 +3,7 @@ const fs = require("fs-extra");
 
 module.exports = {
  config: {
- name: "cdp",
+ name: "coupledp",
  aliases: ["coupledp"],
  version: "1.0",
  author: "Loid Butter",
@@ -36,7 +36,7 @@ module.exports = {
  fs.createReadStream(__dirname + "/tmp/img1.png"),
  fs.createReadStream(__dirname + "/tmp/img2.png")
  ];
- 
+
  return api.sendMessage({
  body: msg,
  attachment: allImages
