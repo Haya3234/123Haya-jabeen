@@ -4,15 +4,11 @@ module.exports = {
 	config: {
 		name: 'shortcut',
 		aliases: ['short'],
-		version: '1.12',
+		version: '1.14',
 		author: 'NTKhang',
 		countDown: 5,
 		role: 0,
-		shortDescription: {
-			vi: 'Thêm một phím tắt cho bạn',
-			en: 'Add a shortcut for you'
-		},
-		longDescription: {
+		description: {
 			vi: 'Thêm một phím tắt cho tin nhắn trong nhóm chat của bạn',
 			en: 'Add a shortcut for your message in group chat'
 		},
@@ -24,7 +20,7 @@ module.exports = {
 				+ '\n   {pn} del <word>: xóa một phím tắt'
 				+ '\n   Ví dụ:\n    {pn} del hi'
 				+ '\n'
-				+ '\n   {pn} [reomve | reset]: xóa bỏ tất cả các phím tắt trong nhóm chat của bạn'
+				+ '\n   {pn} [remove | reset]: xóa bỏ tất cả các phím tắt trong nhóm chat của bạn'
 				+ '\n'
 				+ '\n   {pn} list: xem danh sách tất cả các phím tắt của bạn'
 				+ '\n   {pn} list start <keyword>: xem danh sách các phím tắt của bạn bắt đầu bằng từ khóa <keyword>'
@@ -36,7 +32,7 @@ module.exports = {
 				+ '\n   {pn} del <word>: delete a shortcut'
 				+ '\n   Example:\n    {pn} del hi'
 				+ '\n'
-				+ '\n   {pn} reomve: remove all shortcuts in your group chat'
+				+ '\n   {pn} remove: remove all shortcuts in your group chat'
 				+ '\n'
 				+ '\n   {pn} list: view your shortcuts list'
 				+ '\n   {pn} list start <keyword>: view your shortcuts list start with <keyword>'
@@ -198,9 +194,17 @@ module.exports = {
 
 				const list = (
 					await Promise.all(
-						shortCutList.map(async (x, index) =>
-							`[${index + 1}] ${x.key} => ${x.content ? 1 : 0} ${getLang("message")}, ${x.attachments.length} ${getLang('attachment')} (${await usersData.getName(x.author)})`
-						)
+						shortCutList.map(async (x, index) => {
+							const num = index + 1;
+							const keyword = x.key;
+							const numMessage = x.content ? 1 : 0;
+							const msgContent = numMessage ? `${numMessage} ${getLang("message")}, ` : "";
+							const numAttachments = x.attachments.length;
+							const msgAttachments = numAttachments ? `${x.attachments.length} ${getLang('attachment')}` : "";
+							const authorName = await usersData.getName(x.author);
+
+							return `[${num}] ${keyword} => ${msgContent}${msgAttachments} (${authorName})`;
+						})
 					)
 				).join('\n');
 				message.reply(stringType + '\n' + list);
@@ -247,7 +251,16 @@ module.exports = {
 			else
 				shortCutData[index] = Reaction.newShortcut;
 			await threadsData.set(threadID, shortCutData, 'data.shortcut');
-			return message.reply(getLang('added', Reaction.newShortcut.key, Reaction.newShortcut.content) + (Reaction.newShortcut.attachments.length > 0 ? `\n${getLang('addedAttachment', Reaction.newShortcut.attachments.length)}` : ''));
+			return message.reply(getLang(
+				'added',
+				Reaction.newShortcut.key,
+				Reaction.newShortcut.content
+			)
+				+ (Reaction.newShortcut.attachments.length > 0 ? `\n${getLang(
+					'addedAttachment',
+					Reaction.newShortcut.attachments.length
+				)} ` : '')
+			);
 		}
 	},
 

@@ -1,48 +1,46 @@
-const fs = require("fs");
-const axios = require("axios");
+const axios = require('axios');
 
 module.exports = {
   config: {
-    name: "sdxl",
-    aliases: [],
-    author: "kshitiz & arjhil",
-    version: "2.0",
-    cooldowns: 5,
+    name: 'sdxl',
+    version: '1.0',
+    author: 'Rajveer--',
+    countDown: 50,
     role: 0,
-    shortDescription: {
-      en: ""
-    },
     longDescription: {
-      en: "generate an image"
+      en: 'Text to Image'
     },
-    category: "image",
+    category: 'ai',
     guide: {
-      en: "[prompt | model]"
+      en: `{pn} prompt and here is models u can choose
+1 | DreamshaperXL10
+2 | DynavisionXL
+3 | JuggernautXL
+4 | RealismEngineSDXL
+5 | Sdxl 1.0`
     }
   },
-  onStart: async function ({ api, event, args }) {
-    let path = __dirname + "/cache/image.png";
-    const tzt = args.join(" ").split("|").map(item => item.trim());
-    let txt = tzt[0];
-    let txt2 = tzt[1];
 
-    let tid = event.threadID;
-    let mid = event.messageID;
+  onStart: async function ({ message, api, args, event }) {
+    const text = args.join(' ');
 
-    if (!args[0] || !txt || !txt2) return api.sendMessage("Please provide a prompt and a model.", tid, mid);
-
-    try {
-      api.sendMessage("⏳ Generating...", tid, mid);
-
-      let enctxt = encodeURIComponent(txt); 
-      let url = `https://arjhil-prodia-api.arjhilbard.repl.co/generate?prompt=${enctxt}&model=${txt2}`;
-
-      let result = (await axios.get(url, { responseType: "arraybuffer" })).data; 
-
-      fs.writeFileSync(path, Buffer.from(result, "utf-8"));
-      api.sendMessage({ attachment: fs.createReadStream(path) }, tid, () => fs.unlinkSync(path), mid);
-    } catch (e) {
-      return api.sendMessage(e.message, tid, mid);
+    if (!text) {
+      return message.reply("Soraty e");
     }
+
+    const [prompt, model] = text.split('|').map((text) => text.trim());
+    const puti = model || "2";
+    const baseURL = `https://sandipapi.onrender.com/sdxl?prompt=${prompt}&model=${puti}`;
+
+
+    message.reply("✅| Alik time lagla", async (err, info) => {
+      message.reply({ 
+body: `✅`,
+        attachment: await global.utils.getStreamFromURL(baseURL)
+      });
+      let ui = info.messageID;
+      message.unsend(ui);
+
+    });
   }
 };

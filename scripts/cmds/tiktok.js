@@ -1,75 +1,78 @@
-const axios = require("axios");
-const fs = require("fs");
-const path = require("path");
+const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
+
+async function getStreamFromURL(url) {
+  const response = await axios.get(url, { responseType: 'stream' });
+  return response.data;
+}
+
+async function fetchTikTokVideos(keyword) {
+  try {
+    const response = await axios.get(`https://tiktok-0woq.onrender.com/kshitiz?keyword=${keyword}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
 
 module.exports = {
   config: {
     name: "tiktok",
-    version: "2.0",
-    author: "kshitiz",
-    countDown: 20,
-    role: 0,
-    shortDescription: "Search for TikTok videos",
-    longDescription: {
-      en: "Search for TikTok videos based on keywords."
+    aliases: [],
+    author: "(fixed by idk)",  // Yukinori
+    version: "1.1",
+    shortDescription: {
+      en: "Play TikTok video",
     },
-    category: "info",
+    longDescription: {
+      en: "Play a random TikTok video based on the provided keyword",
+    },
+    category: "fun",
     guide: {
-      en: "{pn} <search text>"
-    }
+      en: "{p}{n} [keyword]",
+    },
   },
+  onStart: async function ({ api, event, args }) {
+    const keyword = args.join(' ');
 
-  onStart: async function ({ api, event, args, message }) {
-    const searchQuery = args.join(" ");
-
-    if (!searchQuery) {
-      api.sendMessage("Usage: {pn} <search text>", event.threadID);
+    if (!keyword) {
+      api.sendMessage({ body: 'Please provide a keyword.\nExample: {p}tiktok dance' }, event.threadID);
       return;
     }
 
-    let searchMessageID;
+    const videos = await fetchTikTokVideos(keyword);
 
-    api.sendMessage("Searching, please wait...", event.threadID, (err, messageInfo) => {
-      searchMessageID = messageInfo.messageID;
-    });
+    if (!videos || videos.length === 0) {
+      api.sendMessage({ body: `No TikTok videos found for the keyword: ${keyword}.` }, event.threadID, event.messageID);
+      return;
+    }
+
+    // Choose a random video from the fetched list
+    const randomIndex = Math.floor(Math.random() * videos.length);
+    const selectedVideo = videos[randomIndex];
+    const videoUrl = selectedVideo.videoUrl;
+
+    if (!videoUrl) {
+      api.sendMessage({ body: 'Error: Video not found.' }, event.threadID, event.messageID);
+      return;
+    }
 
     try {
-      const apiUrl = `https://hiroshi.hiroshiapi.repl.co/tiktok/searchvideo?keywords=${encodeURIComponent(searchQuery)}`;
+      const videoStream = await getStreamFromURL(videoUrl);
 
-      const response = await axios.get(apiUrl);
-      const videos = response.data.data.videos;
-
-      if (!videos || videos.length === 0) {
-        api.sendMessage("No TikTok videos found for your query.", event.threadID);
-      } else {
-        const videoData = videos[0];
-        const videoUrl = videoData.play;
-        const message = `Posted by: ${videoData.author.unique_id}`;
-        const filePath = path.join(__dirname, `/cache/tiktok_video.mp4`);
-        const writer = fs.createWriteStream(filePath);
-
-        const videoResponse = await axios({ method: 'get', url: videoUrl, responseType: 'stream' });
-        videoResponse.data.pipe(writer);
-
-        writer.on('finish', async () => {
-          
-          await api.sendMessage({
-            body: message,
-            attachment: fs.createReadStream(filePath)
-          }, event.threadID, event.messageID);
-          fs.unlinkSync(filePath);
-
-          if (searchMessageID) {
-            api.unsendMessage(searchMessageID);
-          }
-        });
-      }
+      await api.sendMessage({
+        body: `Here is your TikTok video:`,
+        attachment: videoStream,
+      }, event.threadID, event.messageID);
     } catch (error) {
-      console.error('Error:', error);
-      api.sendMessage("An error occurred while processing the request.", event.threadID);
-      if (searchMessageID) {
-        api.unsendMessage(searchMessageID);
-      }
+      console.error(error);
+      api.sendMessage({ body: 'An error occurred while processing the video.\nPlease try again later.' }, event.threadID, event.messageID);
     }
-  }
+  },
+  onReply: async function ({ api, event, Reply, args }) {
+    // ... (unchanged code)
+  },
 };
