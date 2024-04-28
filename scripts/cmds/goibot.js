@@ -36,7 +36,7 @@ config: {
          return api.sendMessage("Hi, good morning have a nice day ❤️🙏", threadID);
        };
 
-       if ((event.body.toLowerCase() == "ɭɭ-ʬIlıll Jàññát Khàñ Ilıllʬ-ɭɭ") || (event.body.toLowerCase() == "@ɭɭ-ʬIlıll Jàññát Khàñ Ilıllʬ-ɭɭ")) {
+       if ((event.body.toLowerCase() == jannatɭ") || (event.body.toLowerCase() == "@ɭɭ-ʬIlıll Jàññát Khàñ Ilıllʬ-ɭɭ")) {
          return api.sendMessage("Busy HoGi Work Me Main t0o Hun Naw 😘", threadID);
        };
 
@@ -76,8 +76,8 @@ config: {
          return api.sendMessage("Haaye Rabba inna pyar🙊🙊", threadID);
        };
 
-       if ((event.body.toLowerCase() == "👍") || (event.body.toLowerCase() == "thenga")) {
-         return api.sendMessage("Oye thenga mat dikha 🙂🙏", threadID);
+       if ((event.body.toLowerCase() == "😉") || (event.body.toLowerCase() == "thenga")) {
+         return api.sendMessage("Aankh kyu maar rahe ho, Me bahut shareef hu🥺", threadID);
        };
 
        if ((event.body.toLowerCase() == "good night") || (event.body.toLowerCase() == "gn")) {
@@ -116,8 +116,8 @@ config: {
          return api.sendMessage("oye hoye sarma gye kya😜", threadID);
        };
 
-       if ((event.body.toLowerCase() == "sasural") || (event.body.toLowerCase() == "married")) {
-         return api.sendMessage("kon married hai kon ja raha hai sasural🤔🙄", threadID);
+       if ((event.body.toLowerCase() == "💋") || (event.body.toLowerCase() == "😘")) {
+         return api.sendMessage("Etni kissi 😘😘 mat karo baby mujhe sharam aati hai🫣🫣", threadID);
        };
 
        if ((event.body.toLowerCase() == "What's the bot swearing") || (event.body.toLowerCase() == "bot cursing")) {
