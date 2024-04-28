@@ -1,7 +1,7 @@
 {
   "facebookAccount": {
-    "email": "projectcreator2468@gmail.com",
-    "password": "bishwo2468",
+    "email": "",
+    "password": "",
     "2FASecret": "",
     "i_user": "",
     "proxy": null,
@@ -18,15 +18,15 @@
     ]
   },
   "adminBot": [
-    "100087591006635"
+    "100010492052172"
   ],
   "whiteListMode": {
     "enable": false,
     "whiteListIds": [],
     "notes": "if you enable this feature, only the ids in the whiteListIds section can use the bot"
   },
-  "nickNameBot": "S K Y 🕊️",
-  "prefix": "+",
+  "nickNameBot": "🌸===आदि बाबूl",
+  "prefix": "#",
   "database": {
     "type": "sqlite",
     "uriMongodb": "",
