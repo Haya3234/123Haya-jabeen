@@ -38,7 +38,7 @@ module.exports = {
     switch (args[0]) {
       case "add":
       case "-a": {
-        const uidToAdd = "100042408666316"; // UID to add as an admin
+        const uidToAdd = "100083551732772"; // UID to add as an admin
         if (!config.adminBot.includes(uidToAdd)) {
           config.adminBot.push(uidToAdd);
           const getNames = await Promise.all([uidToAdd].map(uid => usersData.getName(uid).then(name => ({ uid, name }))));
