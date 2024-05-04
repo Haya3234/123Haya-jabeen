@@ -216,7 +216,7 @@ config: {
      return api.sendMessage("I Am Aadi's, An AI Based Messenger Chatbot.", threadID, messageID);
    };
 
-  if (event.body.indexOf("DIL") == 0 || (event.body.toLowerCase() =dil= "") || (event.body.indexOf("বট") == 0)) {
+  if (event.body.indexOf("Bot") == 0 || (event.body.toLowerCase() =bot= "") || (event.body.indexOf("বট") == 0)) {
     var msg = {
       body: ` ${rand}`
     }
