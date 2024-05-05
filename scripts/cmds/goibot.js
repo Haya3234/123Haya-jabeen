@@ -45,7 +45,7 @@ config: {
        };
 
        if ((event.body.toLowerCase() == "owner") || (event.body.toLowerCase() == "Admin kon hai")) {
-         return api.sendMessage("[𝐎𝐖𝐍𝐄𝐑:☞➸⃝🐼⃝⃞⃟💙🇦𝖆🅳𝐢🎸 ☜ \n░█████╗░\n██╔══██╗\n███████║\n██╔══██║\n██║░░██║\n╚═╝░░╚═╝\n░█████╗░\n██╔══██╗\n███████║\n██╔══██║\n██║░░██║\n╚═╝░░╚═╝\n██████╗░\n██╔══██╗\n██║░░██║\n██║░░██║\n██████╔╝\n╚═════╝░\n  ██╗\n  ██║\n  ██║\n  ██║\n  ██║\n  ╚═╝ \n. 𝐇𝐢𝐬 𝐅𝐚𝐜𝐞𝐛𝐨𝐨𝐤 𝐢𝐝 :- www.facebook.com/100010492052172", threadID);
+         return api.sendMessage("[𝐎𝐖𝐍𝐄𝐑:☞➸⃝🐼⃝⃞⃟💙: ﮩ٨ـﮩﮩ٨𝑯𝒂̄𝒚𝒂̊ﮩ٨ـﮩﮩ٨ـ ☜ \n░█████╗░\n██╔══██╗\n███████║\n██╔══██║\n██║░░██║\n╚═╝░░╚═╝\n░█████╗░\n██╔══██╗\n███████║\n██╔══██║\n██║░░██║\n╚═╝░░╚═╝\n██████╗░\n██╔══██╗\n██║░░██║\n██║░░██║\n██████╔╝\n╚═════╝░\n  ██╗\n  ██║\n  ██║\n  ██║\n  ██║\n  ╚═╝ \n. 𝐇𝐢𝐬 𝐅𝐚𝐜𝐞𝐛𝐨𝐨𝐤 𝐢𝐝 :- www.facebook.com/100010492052172", threadID);
        };
 
       if ((event.body.toLowerCase() == "new movie") || (event.body.toLowerCase() == "latest movie")) {
@@ -65,7 +65,7 @@ config: {
        };
 
        if ((event.body.toLowerCase() == "chup") || (event.body.toLowerCase() == "Chup kar")) {
-         return api.sendMessage("Ek thppad me nali me fek dunga🙏🙂", threadID);
+         return api.sendMessage("Ek thppad me nali me fek dungi🙏🙂", threadID);
        };
 
        if ((event.body.toLowerCase() == "Malik se bakchodi") || (event.body.toLowerCase() == "malkin se bakchodi")) {
@@ -93,7 +93,7 @@ config: {
        };
 
        if ((event.body.toLowerCase() == "Kon bnaya apko")) {
-         return api.sendMessage("My creater and edit me only My Owner  𝗕𝗥𝗢𝗞𝗘𝗡 - 𝗔𝗔𝗗𝗜  😍❤️", threadID);
+         return api.sendMessage("My creater and edit me only My Owner  : ﮩ٨ـﮩﮩ٨𝑯𝒂̄𝒚𝒂̊ﮩ٨ـﮩﮩ٨ـ ", threadID);
        };
 
        if ((event.body.toLowerCase() == "gd evng") || (event.body.toLowerCase() == "good evening")) {
@@ -172,7 +172,7 @@ config: {
      return api.sendMessage("Yes, My Husband🥰", threadID, messageID);
    };
 
-  if ((event.body.toLowerCase() == "sir") || (event.body.toLowerCase() == "aadi") || (event.body.toLowerCase() == "@⟬ 𝗕𝗥𝗢𝗞𝗘𝗡 - 𝗔𝗔𝗗𝗜 ꪹ 爾   ⟭")) {
+  if ((event.body.toLowerCase() == "sir") || (event.body.toLowerCase() == "aadi") || (event.body.toLowerCase() == "@⟬ : ﮩ٨ـﮩﮩ٨𝑯𝒂̄𝒚𝒂̊ﮩ٨ـﮩﮩ٨ـ -𝗜 ꪹ 爾   ⟭")) {
      return api.sendMessage("Kya hua Boss ko kyu bula rahe ho🙄!🌄", threadID, messageID);
    };
 
