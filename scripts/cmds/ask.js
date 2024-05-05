@@ -40,11 +40,11 @@ module.exports = {
       const answer = response.data.answer;
 
 
-    await message.reply({ body: `𝑩𝑹𝑶𝑲𝑬𝑵 𝑨𝑨𝑫𝑰 𝑨𝑰
+    await message.reply({ body: `𝐏𝐈𝐘𝐀 𝐑𝐎𝐘
 ______________________________  
 ${answer}
 𝑩𝒐𝒕 𝒐𝒘𝒏𝒆𝒓 
-m.me/100010492052172`,
+m.me/100084376281244`,
 });
 
    } catch (error) {
