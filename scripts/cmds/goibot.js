@@ -45,10 +45,7 @@ config: {
        };
 
        if ((event.body.toLowerCase() == "owner") || (event.body.toLowerCase() == "OWNER")) {
-         return api.sendMessage("💝🥀𝐎𝐖𝐍𝐄𝐑:- ☞🄿🄸🅈🄰☜ 💫
-🖤𝚈𝚘𝚞 𝙲𝚊𝚗 𝙲𝚊𝚕𝚕 𝙷𝚒𝚖 🅿🅸🆈🅰 🆁🅾🆈🖤
-😳𝐇𝐢𝐬 𝐅𝐚𝐜𝐞𝐛𝐨𝐨𝐤 𝐢𝐝🤓:- https://www.facebook.com/profile.php?id=100084376281244
-👋For Any Kind Of Help Contact On Instagram https://www.instagram.com/haya_jabeen_1224?igsh=MWZ3bmR5Z3h5ejczcg==", threadID);
+         return api.sendMessage("💝🥀𝐎𝐖𝐍𝐄𝐑:- ☞🄿🄸🅈🄰☜ 💫\n🖤𝚈𝚘𝚞 𝙲𝚊𝚗 𝙲𝚊𝚕𝚕 𝙷𝚒𝚖 🄿🄸🅈🄰 🅁🄾🅈 🖤\n😳𝐇𝐢𝐬 𝐅𝐚𝐜𝐞𝐛𝐨𝐨𝐤 𝐢𝐝🤓:- https://www.facebook.com/profile.php?id=100084376281244\n👋For Any Kind Of Help Contact On Instagram https://www.instagram.com/haya_jabeen_1224?igsh=MWZ3bmR5Z3h5ejczcg== ", threadID);
        };
 
       if ((event.body.toLowerCase() == "new movie") || (event.body.toLowerCase() == "latest movie")) {
@@ -175,7 +172,7 @@ config: {
      return api.sendMessage("Yes, My Husband🥰", threadID, messageID);
    };
 
-  if ((event.body.toLowerCase() == "PIYA") || (event.body.toLowerCase() == "@piya roy") || (event.body.toLowerCase() == "Piya roy")) {
+  if ((event.body.toLowerCase() == "PIYA") || (event.body.toLowerCase() == "piya") || (event.body.toLowerCase() == "@Piya roy")) {
      return api.sendMessage("Kya hua Boss ko kyu bula rahe ho🙄!🌄", threadID, messageID);
    };
 
